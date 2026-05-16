@@ -1,9 +1,18 @@
 import { Client, Account, Databases, ID, Query } from 'appwrite';
 
-const client = new Client()
-  .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
-  .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!);
+const client = new Client();
 
-export const account = new Account(client);
+// Add an empty string fallback ("") to prevent .replace() from trying to read undefined
+const endpoint = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || "";
+const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || "";
+
+if (endpoint) {
+  client.setEndpoint(endpoint);
+}
+if (projectId) {
+  client.setProject(projectId);
+}
+
 export const databases = new Databases(client);
-export { ID, Query };
+export const account = new Account(client);
+export { client };
