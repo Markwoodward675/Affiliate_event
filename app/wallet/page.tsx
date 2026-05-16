@@ -49,7 +49,7 @@ export default function WalletPage() {
         [Query.equal('userId', user?.$id)]
       );
       
-      setCompletions(completionsResponse.documents as Completion[]);
+      setCompletions(completionsResponse.documents as unknown as Completion[]);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {

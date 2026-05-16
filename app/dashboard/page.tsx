@@ -39,7 +39,7 @@ export default function Dashboard() {
         'tasks',
         [Query.equal('isActive', true)]
       );
-      setTasks(tasksResponse.documents as Task[]);
+      setTasks(tasksResponse.documents as unknown as Task[]);
 
       const usersResponse = await databases.listDocuments(
         process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
