@@ -107,6 +107,16 @@ export default function WalletPage() {
           >
             💳 Wallet
           </button>
+          <button
+            onClick={() => router.push('/settings')}
+            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+              activeNav === 'settings'
+                ? 'bg-indigo-50 text-indigo-700 font-medium'
+                : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            ⚙️ Settings
+          </button>
         </nav>
         <div className="absolute bottom-0 w-64 p-4 border-t border-gray-200">
           <div className="flex items-center gap-3 mb-4">
@@ -144,10 +154,17 @@ export default function WalletPage() {
             <p className="text-5xl font-bold mb-4">
               ${(userData?.totalReferralEarnings || 0).toFixed(2)}
             </p>
-            <div className="flex items-center gap-2 text-indigo-100">
+            <div className="flex items-center gap-2 text-indigo-100 mb-6">
               <span className="text-green-300">↑</span>
               <span>You've earned this session</span>
             </div>
+            <button
+              onClick={() => alert('Withdrawal request submitted!')}
+              disabled={(userData?.totalReferralEarnings || 0) < 10}
+              className="w-full bg-white text-indigo-700 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {((userData?.totalReferralEarnings || 0) < 10) ? 'Min. $10 to withdraw' : '💰 Withdraw Funds'}
+            </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

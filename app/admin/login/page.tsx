@@ -19,7 +19,7 @@ export default function AdminLogin() {
     setIsLoading(true);
     try {
       await login(email, password);
-      router.push('/dashboard');
+      router.push('/admin/dashboard');
     } catch (error) {
       console.error('Admin login failed:', error);
       alert('Admin login failed. Please ensure the admin account is registered in Appwrite.');

@@ -135,6 +135,16 @@ export default function Dashboard() {
           >
             💳 Wallet
           </button>
+          <button
+            onClick={() => router.push('/settings')}
+            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+              activeNav === 'settings'
+                ? 'bg-indigo-50 text-indigo-700 font-medium'
+                : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            ⚙️ Settings
+          </button>
         </nav>
         <div className="absolute bottom-0 w-64 p-4 border-t border-gray-200">
           <div className="flex items-center gap-3 mb-4">
