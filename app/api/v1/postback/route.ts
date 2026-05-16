@@ -1,17 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Client, Databases, ID, Query } from 'node-appwrite';
 
-const client = new Client()
-  .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
-  .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!)
-  .setKey(process.env.APPWRITE_API_KEY!);
-
-const databases = new Databases(client);
-
-const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!;
-const USERS_COLLECTION_ID = 'users';
-const TASKS_COLLECTION_ID = 'tasks';
-const COMPLETIONS_COLLECTION_ID = 'completions';
+export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   return handlePostback(req);
@@ -23,6 +13,17 @@ export async function POST(req: NextRequest) {
 
 async function handlePostback(req: NextRequest) {
   try {
+    const client = new Client()
+      .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT!)
+      .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID!)
+      .setKey(process.env.APPWRITE_API_KEY!);
+
+    const databases = new Databases(client);
+    const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!;
+    const USERS_COLLECTION_ID = 'users';
+    const TASKS_COLLECTION_ID = 'tasks';
+    const COMPLETIONS_COLLECTION_ID = 'completions';
+
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get('userId');
     const payout = parseFloat(searchParams.get('payout') || '0');
