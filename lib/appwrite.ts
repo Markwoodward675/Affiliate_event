@@ -1,8 +1,7 @@
-import { Client, Account, Databases, ID, Query } from 'appwrite';
+import { Client, Databases, Account, Query, ID } from 'appwrite';
 
 const client = new Client();
 
-// Add an empty string fallback ("") to prevent .replace() from trying to read undefined
 const endpoint = process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT || "";
 const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID || "";
 
@@ -15,4 +14,6 @@ if (projectId) {
 
 export const databases = new Databases(client);
 export const account = new Account(client);
-export { client };
+
+// ADD THESE TWO EXPORTS SO YOUR PAGES CAN USE THEM:
+export { client, Query, ID };
