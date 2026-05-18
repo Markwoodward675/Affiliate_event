@@ -36,7 +36,8 @@ const ensureUserExists = async (userId: string, email: string) => {
           tierLevel: 0,
           totalReferralEarnings: 0,
           miningLevel: 'free_tier',
-          currentHashrate: '1 TH/s'
+          currentHashrate: '1 TH/s',
+          freeMiningEnabled: true
         }
       );
     }
@@ -84,7 +85,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           tierLevel: 0,
           totalReferralEarnings: 0,
           miningLevel: 'free_tier',
-          currentHashrate: '1 TH/s'
+          currentHashrate: '1 TH/s',
+          freeMiningEnabled: true
         }
       );
       

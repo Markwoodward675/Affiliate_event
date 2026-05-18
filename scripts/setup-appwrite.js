@@ -70,6 +70,7 @@ const setup = async () => {
       await databases.createFloatAttribute({ databaseId: DATABASE_ID, collectionId: USERS_COLLECTION_ID, key: 'pendingWithdrawals', required: true, default: 0 });
       await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: USERS_COLLECTION_ID, key: 'miningLevel', size: 50, required: true, default: 'free_tier' });
       await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: USERS_COLLECTION_ID, key: 'currentHashrate', size: 50, required: true, default: '1 TH/s' });
+      await databases.createBooleanAttribute({ databaseId: DATABASE_ID, collectionId: USERS_COLLECTION_ID, key: 'freeMiningEnabled', required: true, default: true });
       
       console.log('Waiting for attributes to process...');
       await delay(3000);

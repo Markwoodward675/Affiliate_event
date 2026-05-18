@@ -13,6 +13,7 @@ interface User {
   referralCode: string;
   tierLevel: number;
   totalReferralEarnings: number;
+  freeMiningEnabled: boolean;
 }
 
 interface EarningPlatform {
@@ -87,6 +88,24 @@ export default function AdminDashboard() {
         console.error('Error deleting user:', error);
         alert('Failed to delete user');
       }
+    }
+  };
+
+  const handleToggleFreeMining = async (user: User) => {
+    try {
+      const newFreeMiningEnabled = !user.freeMiningEnabled;
+      await databases.updateDocument(
+        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+        'users',
+        user.$id,
+        {
+          freeMiningEnabled: newFreeMiningEnabled,
+        }
+      );
+      await fetchUsers();
+    } catch (error) {
+      console.error('Error toggling free mining:', error);
+      alert('Failed to toggle free mining');
     }
   };
 
@@ -263,6 +282,9 @@ export default function AdminDashboard() {
                           Earnings
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Free Mining
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           Actions
                         </th>
                       </tr>
@@ -291,6 +313,18 @@ export default function AdminDashboard() {
                             <span className="text-sm font-semibold text-green-600">
                               ${(user.totalReferralEarnings || 0).toFixed(2)}
                             </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <button
+                              onClick={() => handleToggleFreeMining(user)}
+                              className={`w-16 h-8 rounded-full transition-colors relative ${
+                                user.freeMiningEnabled ? 'bg-green-600' : 'bg-gray-300'
+                              }`}
+                            >
+                              <div className={`w-6 h-6 bg-white rounded-full shadow-md absolute top-1 left-1 transition-transform ${
+                                user.freeMiningEnabled ? 'translate-x-8' : 'translate-x-0'
+                              }`} />
+                            </button>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                             <button

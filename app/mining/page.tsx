@@ -33,6 +33,7 @@ interface UserData {
   totalReferralEarnings: number;
   miningLevel: string;
   currentHashrate: string;
+  freeMiningEnabled: boolean;
 }
 
 const miningPackages: MiningPackage[] = [
@@ -237,6 +238,26 @@ export default function MiningPage() {
     }
   };
 
+  const handleToggleFreeMining = async () => {
+    if (!userData || !user) return;
+
+    try {
+      const newFreeMiningEnabled = !userData.freeMiningEnabled;
+      await databases.updateDocument(
+        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID!,
+        'users',
+        userData.$id,
+        {
+          freeMiningEnabled: newFreeMiningEnabled,
+        }
+      );
+
+      fetchData();
+    } catch (error) {
+      console.error('Error toggling free mining:', error);
+    }
+  };
+
   const expiredContracts = contracts.filter(c => c.status === 'expired');
 
   if (loading || loadingData) {
@@ -368,6 +389,24 @@ export default function MiningPage() {
                 <p className="text-2xl font-bold text-green-600">
                   {contracts.filter(c => c.status === 'active').length}
                 </p>
+              </div>
+            </div>
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900">Free Tier Mining</h4>
+                  <p className="text-sm text-gray-500">Enable/disable the free 1 TH/s mining tier</p>
+                </div>
+                <button
+                  onClick={handleToggleFreeMining}
+                  className={`w-20 h-10 rounded-full transition-colors relative ${
+                    userData?.freeMiningEnabled ? 'bg-green-600' : 'bg-gray-300'
+                  }`}
+                >
+                  <div className={`w-8 h-8 bg-white rounded-full shadow-md absolute top-1 left-1 transition-transform ${
+                    userData?.freeMiningEnabled ? 'translate-x-10' : 'translate-x-0'
+                  }`} />
+                </button>
               </div>
             </div>
           </div>
