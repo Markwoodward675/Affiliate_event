@@ -23,6 +23,9 @@ export async function POST(request: NextRequest) {
       case 'seed':
         message = 'Task seeding script would run here';
         break;
+      case 'seed-user-tasks':
+        message = 'User tasks seeding script would run here';
+        break;
       default:
         return NextResponse.json({ error: 'Unknown script' }, { status: 400 });
     }

@@ -32,6 +32,10 @@ const COMPLETIONS_COLLECTION_ID = 'completions';
 const WITHDRAWALS_COLLECTION_ID = 'withdrawals';
 const PLATFORMS_COLLECTION_ID = 'platforms';
 const NOTIFICATIONS_COLLECTION_ID = 'notifications';
+const HARDWARE_CONTRACTS_COLLECTION_ID = 'hardware_contracts';
+const USER_TASKS_COLLECTION_ID = 'user_tasks';
+const USER_ACTIVITIES_COLLECTION_ID = 'user_activities';
+const BROWSER_MINERS_COLLECTION_ID = 'browser_miners';
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -64,6 +68,8 @@ const setup = async () => {
       await databases.createIntegerAttribute({ databaseId: DATABASE_ID, collectionId: USERS_COLLECTION_ID, key: 'tierLevel', required: true, default: 0 });
       await databases.createFloatAttribute({ databaseId: DATABASE_ID, collectionId: USERS_COLLECTION_ID, key: 'totalReferralEarnings', required: true, default: 0 });
       await databases.createFloatAttribute({ databaseId: DATABASE_ID, collectionId: USERS_COLLECTION_ID, key: 'pendingWithdrawals', required: true, default: 0 });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: USERS_COLLECTION_ID, key: 'miningLevel', size: 50, required: true, default: 'free_tier' });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: USERS_COLLECTION_ID, key: 'currentHashrate', size: 50, required: true, default: '1 TH/s' });
       
       console.log('Waiting for attributes to process...');
       await delay(3000);
@@ -209,6 +215,121 @@ const setup = async () => {
       await databases.createIndex({ databaseId: DATABASE_ID, collectionId: NOTIFICATIONS_COLLECTION_ID, key: 'isRead', type: 'key', attributes: ['isRead'] });
 
       console.log('✓ Notifications attributes and indexes successfully created');
+    }
+
+    // --- Hardware Contracts Collection ---
+    try {
+      await databases.getCollection({ databaseId: DATABASE_ID, collectionId: HARDWARE_CONTRACTS_COLLECTION_ID });
+      console.log('✓ Hardware Contracts collection already exists');
+    } catch (error) {
+      console.log('Creating Hardware Contracts collection...');
+      await databases.createCollection({
+        databaseId: DATABASE_ID,
+        collectionId: HARDWARE_CONTRACTS_COLLECTION_ID,
+        name: 'Hardware Contracts'
+      });
+      await delay(1000);
+
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: HARDWARE_CONTRACTS_COLLECTION_ID, key: 'userId', size: 255, required: true });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: HARDWARE_CONTRACTS_COLLECTION_ID, key: 'contractId', size: 255, required: true });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: HARDWARE_CONTRACTS_COLLECTION_ID, key: 'provider', size: 255, required: true });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: HARDWARE_CONTRACTS_COLLECTION_ID, key: 'machineName', size: 255, required: true });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: HARDWARE_CONTRACTS_COLLECTION_ID, key: 'hashrate', size: 50, required: true });
+      await databases.createFloatAttribute({ databaseId: DATABASE_ID, collectionId: HARDWARE_CONTRACTS_COLLECTION_ID, key: 'pricePaid', required: true, default: 0 });
+      await databases.createIntegerAttribute({ databaseId: DATABASE_ID, collectionId: HARDWARE_CONTRACTS_COLLECTION_ID, key: 'durationDays', required: true, default: 30 });
+      await databases.createFloatAttribute({ databaseId: DATABASE_ID, collectionId: HARDWARE_CONTRACTS_COLLECTION_ID, key: 'dailyYieldEst', required: true, default: 0 });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: HARDWARE_CONTRACTS_COLLECTION_ID, key: 'status', size: 50, required: true, default: 'active' });
+      await databases.createDatetimeAttribute({ databaseId: DATABASE_ID, collectionId: HARDWARE_CONTRACTS_COLLECTION_ID, key: 'expiresAt', required: true });
+
+      console.log('Waiting for attributes to process...');
+      await delay(3000);
+
+      await databases.createIndex({ databaseId: DATABASE_ID, collectionId: HARDWARE_CONTRACTS_COLLECTION_ID, key: 'userId', type: 'key', attributes: ['userId'] });
+      await databases.createIndex({ databaseId: DATABASE_ID, collectionId: HARDWARE_CONTRACTS_COLLECTION_ID, key: 'status', type: 'key', attributes: ['status'] });
+
+      console.log('✓ Hardware Contracts attributes and indexes successfully created');
+    }
+
+    // --- User Tasks Collection ---
+    try {
+      await databases.getCollection({ databaseId: DATABASE_ID, collectionId: USER_TASKS_COLLECTION_ID });
+      console.log('✓ User Tasks collection already exists');
+    } catch (error) {
+      console.log('Creating User Tasks collection...');
+      await databases.createCollection({
+        databaseId: DATABASE_ID,
+        collectionId: USER_TASKS_COLLECTION_ID,
+        name: 'User Tasks'
+      });
+      await delay(1000);
+
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: USER_TASKS_COLLECTION_ID, key: 'taskId', size: 255, required: true });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: USER_TASKS_COLLECTION_ID, key: 'category', size: 50, required: true });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: USER_TASKS_COLLECTION_ID, key: 'title', size: 255, required: true });
+      await databases.createFloatAttribute({ databaseId: DATABASE_ID, collectionId: USER_TASKS_COLLECTION_ID, key: 'rewardAmount', required: true, default: 0 });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: USER_TASKS_COLLECTION_ID, key: 'externalUrl', size: 500, required: true });
+
+      console.log('Waiting for attributes to process...');
+      await delay(3000);
+
+      await databases.createIndex({ databaseId: DATABASE_ID, collectionId: USER_TASKS_COLLECTION_ID, key: 'category', type: 'key', attributes: ['category'] });
+
+      console.log('✓ User Tasks attributes and indexes successfully created');
+    }
+
+    // --- User Activities Collection ---
+    try {
+      await databases.getCollection({ databaseId: DATABASE_ID, collectionId: USER_ACTIVITIES_COLLECTION_ID });
+      console.log('✓ User Activities collection already exists');
+    } catch (error) {
+      console.log('Creating User Activities collection...');
+      await databases.createCollection({
+        databaseId: DATABASE_ID,
+        collectionId: USER_ACTIVITIES_COLLECTION_ID,
+        name: 'User Activities'
+      });
+      await delay(1000);
+
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: USER_ACTIVITIES_COLLECTION_ID, key: 'userId', size: 255, required: true });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: USER_ACTIVITIES_COLLECTION_ID, key: 'activityType', size: 50, required: true });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: USER_ACTIVITIES_COLLECTION_ID, key: 'description', size: 1000, required: true });
+      await databases.createDatetimeAttribute({ databaseId: DATABASE_ID, collectionId: USER_ACTIVITIES_COLLECTION_ID, key: 'timestamp', required: true });
+
+      console.log('Waiting for attributes to process...');
+      await delay(3000);
+
+      await databases.createIndex({ databaseId: DATABASE_ID, collectionId: USER_ACTIVITIES_COLLECTION_ID, key: 'userId', type: 'key', attributes: ['userId'] });
+
+      console.log('✓ User Activities attributes and indexes successfully created');
+    }
+
+    // --- Browser Miners Collection ---
+    try {
+      await databases.getCollection({ databaseId: DATABASE_ID, collectionId: BROWSER_MINERS_COLLECTION_ID });
+      console.log('✓ Browser Miners collection already exists');
+    } catch (error) {
+      console.log('Creating Browser Miners collection...');
+      await databases.createCollection({
+        databaseId: DATABASE_ID,
+        collectionId: BROWSER_MINERS_COLLECTION_ID,
+        name: 'Browser Miners'
+      });
+      await delay(1000);
+
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: BROWSER_MINERS_COLLECTION_ID, key: 'minerId', size: 255, required: true });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: BROWSER_MINERS_COLLECTION_ID, key: 'userId', size: 255, required: true });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: BROWSER_MINERS_COLLECTION_ID, key: 'nodeName', size: 255, required: true });
+      await databases.createIntegerAttribute({ databaseId: DATABASE_ID, collectionId: BROWSER_MINERS_COLLECTION_ID, key: 'allocatedThreads', required: true, default: 1 });
+      await databases.createIntegerAttribute({ databaseId: DATABASE_ID, collectionId: BROWSER_MINERS_COLLECTION_ID, key: 'totalHashesMined', required: true, default: 0 });
+      await databases.createBooleanAttribute({ databaseId: DATABASE_ID, collectionId: BROWSER_MINERS_COLLECTION_ID, key: 'isRunning', required: true, default: false });
+      await databases.createDatetimeAttribute({ databaseId: DATABASE_ID, collectionId: BROWSER_MINERS_COLLECTION_ID, key: 'createdAt', required: true });
+
+      console.log('Waiting for attributes to process...');
+      await delay(3000);
+
+      await databases.createIndex({ databaseId: DATABASE_ID, collectionId: BROWSER_MINERS_COLLECTION_ID, key: 'userId', type: 'key', attributes: ['userId'] });
+
+      console.log('✓ Browser Miners attributes and indexes successfully created');
     }
 
     console.log('\n🎉 Appwrite database setup completed successfully!');

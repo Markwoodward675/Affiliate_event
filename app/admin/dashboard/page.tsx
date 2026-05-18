@@ -420,7 +420,7 @@ export default function AdminDashboard() {
                 <p className="text-gray-600">Run database setup and management scripts</p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 <div className="bg-white rounded-xl shadow-md p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <span className="text-3xl">🛢️</span>
@@ -478,6 +478,26 @@ export default function AdminDashboard() {
                   </button>
                   <div className="mt-3 text-xs text-gray-500">
                     Run: <code className="bg-gray-100 px-2 py-1 rounded">node scripts/seed-tasks.js</code>
+                  </div>
+                </div>
+
+                <div className="bg-white rounded-xl shadow-md p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-3xl">📋</span>
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900">Seed User Tasks</h4>
+                      <p className="text-sm text-gray-500">Populate task wall with user tasks</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleRunScript('seed-user-tasks')}
+                    disabled={scriptLoading !== null}
+                    className="w-full px-4 py-3 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 disabled:opacity-50"
+                  >
+                    {scriptLoading === 'seed-user-tasks' ? 'Running...' : 'Run Seed Script'}
+                  </button>
+                  <div className="mt-3 text-xs text-gray-500">
+                    Run: <code className="bg-gray-100 px-2 py-1 rounded">node scripts/seed-user-tasks.js</code>
                   </div>
                 </div>
               </div>
