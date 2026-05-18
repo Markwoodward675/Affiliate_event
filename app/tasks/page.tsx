@@ -190,6 +190,16 @@ export default function TasksPage() {
             ⛏️ Passive Mining
           </button>
           <button
+            onClick={() => router.push('/browser-mining')}
+            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+              activeNav === 'browser-mining'
+                ? 'bg-indigo-50 text-indigo-700 font-medium'
+                : 'text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            🖥️ Browser Mining
+          </button>
+          <button
             onClick={() => setActiveNav('tasks')}
             className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
               activeNav === 'tasks'
