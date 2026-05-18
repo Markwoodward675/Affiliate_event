@@ -30,6 +30,9 @@ const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
 const USERS_COLLECTION_ID = 'users';
 const TASKS_COLLECTION_ID = 'tasks';
 const COMPLETIONS_COLLECTION_ID = 'completions';
+const WITHDRAWALS_COLLECTION_ID = 'withdrawals';
+const PLATFORMS_COLLECTION_ID = 'platforms';
+const NOTIFICATIONS_COLLECTION_ID = 'notifications';
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -77,8 +80,50 @@ const updatePermissions = async () => {
       ]
     });
     console.log('✓ Completions collection permissions updated');
+    await delay(1000);
 
-    console.log('\n🎉 Collection permissions updated successfully!');
+    // --- Withdrawals Collection Permissions ---
+    console.log('Updating Withdrawals collection permissions...');
+    await databases.updateCollection({
+      databaseId: DATABASE_ID,
+      collectionId: WITHDRAWALS_COLLECTION_ID,
+      name: 'Withdrawals',
+      permissions: [
+        Permission.read(Role.users()),
+        Permission.write(Role.users())
+      ]
+    });
+    console.log('✓ Withdrawals collection permissions updated');
+    await delay(1000);
+
+    // --- Platforms Collection Permissions ---
+    console.log('Updating Platforms collection permissions...');
+    await databases.updateCollection({
+      databaseId: DATABASE_ID,
+      collectionId: PLATFORMS_COLLECTION_ID,
+      name: 'Platforms',
+      permissions: [
+        Permission.read(Role.any()),
+        Permission.read(Role.users())
+      ]
+    });
+    console.log('✓ Platforms collection permissions updated');
+    await delay(1000);
+
+    // --- Notifications Collection Permissions ---
+    console.log('Updating Notifications collection permissions...');
+    await databases.updateCollection({
+      databaseId: DATABASE_ID,
+      collectionId: NOTIFICATIONS_COLLECTION_ID,
+      name: 'Notifications',
+      permissions: [
+        Permission.read(Role.users()),
+        Permission.write(Role.users())
+      ]
+    });
+    console.log('✓ Notifications collection permissions updated');
+
+    console.log('\n🎉 All collection permissions updated successfully!');
   } catch (error) {
     console.error('\n❌ Error updating permissions:');
     console.error(error.message || error);

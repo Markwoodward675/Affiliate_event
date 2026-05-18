@@ -34,7 +34,9 @@ const ensureUserExists = async (userId: string, email: string) => {
           referredBy: null,
           referralCode,
           tierLevel: 0,
-          totalReferralEarnings: 0
+          totalReferralEarnings: 0,
+          miningLevel: 'free_tier',
+          currentHashrate: '1 TH/s'
         }
       );
     }
@@ -80,7 +82,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           referredBy: referredBy || null,
           referralCode,
           tierLevel: 0,
-          totalReferralEarnings: 0
+          totalReferralEarnings: 0,
+          miningLevel: 'free_tier',
+          currentHashrate: '1 TH/s'
         }
       );
       

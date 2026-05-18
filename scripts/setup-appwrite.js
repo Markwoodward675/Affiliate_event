@@ -29,6 +29,9 @@ const DATABASE_ID = process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID;
 const USERS_COLLECTION_ID = 'users';
 const TASKS_COLLECTION_ID = 'tasks';
 const COMPLETIONS_COLLECTION_ID = 'completions';
+const WITHDRAWALS_COLLECTION_ID = 'withdrawals';
+const PLATFORMS_COLLECTION_ID = 'platforms';
+const NOTIFICATIONS_COLLECTION_ID = 'notifications';
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -60,6 +63,7 @@ const setup = async () => {
       await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: USERS_COLLECTION_ID, key: 'referralCode', size: 8, required: true });
       await databases.createIntegerAttribute({ databaseId: DATABASE_ID, collectionId: USERS_COLLECTION_ID, key: 'tierLevel', required: true, default: 0 });
       await databases.createFloatAttribute({ databaseId: DATABASE_ID, collectionId: USERS_COLLECTION_ID, key: 'totalReferralEarnings', required: true, default: 0 });
+      await databases.createFloatAttribute({ databaseId: DATABASE_ID, collectionId: USERS_COLLECTION_ID, key: 'pendingWithdrawals', required: true, default: 0 });
       
       console.log('Waiting for attributes to process...');
       await delay(3000);
@@ -123,7 +127,92 @@ const setup = async () => {
       console.log('✓ Completions attributes successfully created');
     }
 
+    // --- Withdrawals Collection (New!) ---
+    try {
+      await databases.getCollection({ databaseId: DATABASE_ID, collectionId: WITHDRAWALS_COLLECTION_ID });
+      console.log('✓ Withdrawals collection already exists');
+    } catch (error) {
+      console.log('Creating Withdrawals collection...');
+      await databases.createCollection({
+        databaseId: DATABASE_ID,
+        collectionId: WITHDRAWALS_COLLECTION_ID,
+        name: 'Withdrawals'
+      });
+      await delay(1000);
+
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: WITHDRAWALS_COLLECTION_ID, key: 'withdrawalId', size: 255, required: true });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: WITHDRAWALS_COLLECTION_ID, key: 'userId', size: 255, required: true });
+      await databases.createFloatAttribute({ databaseId: DATABASE_ID, collectionId: WITHDRAWALS_COLLECTION_ID, key: 'amount', required: true, default: 0 });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: WITHDRAWALS_COLLECTION_ID, key: 'status', size: 50, required: true, default: 'Pending' });
+      await databases.createDatetimeAttribute({ databaseId: DATABASE_ID, collectionId: WITHDRAWALS_COLLECTION_ID, key: 'requestedAt', required: true });
+      await databases.createDatetimeAttribute({ databaseId: DATABASE_ID, collectionId: WITHDRAWALS_COLLECTION_ID, key: 'processedAt', required: false });
+
+      console.log('Waiting for attributes to process...');
+      await delay(3000);
+
+      await databases.createIndex({ databaseId: DATABASE_ID, collectionId: WITHDRAWALS_COLLECTION_ID, key: 'userId', type: 'key', attributes: ['userId'] });
+      await databases.createIndex({ databaseId: DATABASE_ID, collectionId: WITHDRAWALS_COLLECTION_ID, key: 'status', type: 'key', attributes: ['status'] });
+
+      console.log('✓ Withdrawals attributes and indexes successfully created');
+    }
+
+    // --- Platforms Collection (New!) ---
+    try {
+      await databases.getCollection({ databaseId: DATABASE_ID, collectionId: PLATFORMS_COLLECTION_ID });
+      console.log('✓ Platforms collection already exists');
+    } catch (error) {
+      console.log('Creating Platforms collection...');
+      await databases.createCollection({
+        databaseId: DATABASE_ID,
+        collectionId: PLATFORMS_COLLECTION_ID,
+        name: 'Platforms'
+      });
+      await delay(1000);
+
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: PLATFORMS_COLLECTION_ID, key: 'platformId', size: 255, required: true });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: PLATFORMS_COLLECTION_ID, key: 'name', size: 255, required: true });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: PLATFORMS_COLLECTION_ID, key: 'url', size: 500, required: true });
+      await databases.createBooleanAttribute({ databaseId: DATABASE_ID, collectionId: PLATFORMS_COLLECTION_ID, key: 'isActive', required: true, default: true });
+
+      console.log('Waiting for attributes to process...');
+      await delay(3000);
+
+      await databases.createIndex({ databaseId: DATABASE_ID, collectionId: PLATFORMS_COLLECTION_ID, key: 'isActive', type: 'key', attributes: ['isActive'] });
+
+      console.log('✓ Platforms attributes and indexes successfully created');
+    }
+
+    // --- Notifications Collection (Future-Proof!) ---
+    try {
+      await databases.getCollection({ databaseId: DATABASE_ID, collectionId: NOTIFICATIONS_COLLECTION_ID });
+      console.log('✓ Notifications collection already exists');
+    } catch (error) {
+      console.log('Creating Notifications collection...');
+      await databases.createCollection({
+        databaseId: DATABASE_ID,
+        collectionId: NOTIFICATIONS_COLLECTION_ID,
+        name: 'Notifications'
+      });
+      await delay(1000);
+
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: NOTIFICATIONS_COLLECTION_ID, key: 'notificationId', size: 255, required: true });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: NOTIFICATIONS_COLLECTION_ID, key: 'userId', size: 255, required: true });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: NOTIFICATIONS_COLLECTION_ID, key: 'title', size: 255, required: true });
+      await databases.createStringAttribute({ databaseId: DATABASE_ID, collectionId: NOTIFICATIONS_COLLECTION_ID, key: 'message', size: 1000, required: true });
+      await databases.createBooleanAttribute({ databaseId: DATABASE_ID, collectionId: NOTIFICATIONS_COLLECTION_ID, key: 'isRead', required: true, default: false });
+      await databases.createDatetimeAttribute({ databaseId: DATABASE_ID, collectionId: NOTIFICATIONS_COLLECTION_ID, key: 'createdAt', required: true });
+
+      console.log('Waiting for attributes to process...');
+      await delay(3000);
+
+      await databases.createIndex({ databaseId: DATABASE_ID, collectionId: NOTIFICATIONS_COLLECTION_ID, key: 'userId', type: 'key', attributes: ['userId'] });
+      await databases.createIndex({ databaseId: DATABASE_ID, collectionId: NOTIFICATIONS_COLLECTION_ID, key: 'isRead', type: 'key', attributes: ['isRead'] });
+
+      console.log('✓ Notifications attributes and indexes successfully created');
+    }
+
     console.log('\n🎉 Appwrite database setup completed successfully!');
+    console.log('\nAll collections are ready for present and future use!');
   } catch (error) {
     console.error('\n❌ Error setting up Appwrite database:');
     console.error(error.message || error);
