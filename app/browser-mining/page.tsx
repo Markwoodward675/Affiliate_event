@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { databases, Query, ID } from '@/lib/appwrite';
 import { useRouter } from 'next/navigation';
+import Header from '@/components/Header';
 
 interface BrowserMiner {
   $id: string;
@@ -24,11 +25,10 @@ interface MinerWorkerState {
 }
 
 export default function BrowserMiningPage() {
-  const { user, logout, loading } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
   const [miners, setMiners] = useState<BrowserMiner[]>([]);
   const [loadingData, setLoadingData] = useState(true);
-  const [activeNav, setActiveNav] = useState('browser-mining');
   const [newNodeName, setNewNodeName] = useState('');
   const [newAllocatedThreads, setNewAllocatedThreads] = useState(1);
   const [editingMiner, setEditingMiner] = useState<BrowserMiner | null>(null);
@@ -71,19 +71,6 @@ export default function BrowserMiningPage() {
     } finally {
       setLoadingData(false);
     }
-  };
-
-  const handleLogout = async () => {
-    Object.values(workerStatesRef.current).forEach(state => {
-      if (state.worker) {
-        state.worker.terminate();
-      }
-    });
-    Object.values(syncIntervalsRef.current).forEach(interval => {
-      clearInterval(interval);
-    });
-    await logout();
-    router.push('/login');
   };
 
   const handleProvisionNode = async () => {
@@ -259,115 +246,30 @@ export default function BrowserMiningPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      <aside className="w-64 bg-white shadow-lg">
-        <div className="p-6 border-b border-gray-200">
-          <h1 className="text-2xl font-bold text-indigo-600">Affiliate Event</h1>
-        </div>
-        <nav className="p-4 space-y-2">
-          <button
-            onClick={() => router.push('/dashboard')}
-            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-              activeNav === 'dashboard'
-                ? 'bg-indigo-50 text-indigo-700 font-medium'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            📊 Dashboard
-          </button>
-          <button
-            onClick={() => router.push('/mining')}
-            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-              activeNav === 'mining'
-                ? 'bg-indigo-50 text-indigo-700 font-medium'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            ⛏️ Passive Mining
-          </button>
-          <button
-            onClick={() => setActiveNav('browser-mining')}
-            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-              activeNav === 'browser-mining'
-                ? 'bg-indigo-50 text-indigo-700 font-medium'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            🖥️ Browser Mining
-          </button>
-          <button
-            onClick={() => router.push('/tasks')}
-            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-              activeNav === 'tasks'
-                ? 'bg-indigo-50 text-indigo-700 font-medium'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            📋 Task Wall
-          </button>
-          <button
-            onClick={() => router.push('/wallet')}
-            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-              activeNav === 'wallet'
-                ? 'bg-indigo-50 text-indigo-700 font-medium'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            💳 Wallet
-          </button>
-          <button
-            onClick={() => router.push('/settings')}
-            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-              activeNav === 'settings'
-                ? 'bg-indigo-50 text-indigo-700 font-medium'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            ⚙️ Settings
-          </button>
-        </nav>
-        <div className="absolute bottom-0 w-64 p-4 border-t border-gray-200">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-              <span className="text-indigo-600 font-bold">
-                {user?.email?.[0].toUpperCase()}
-              </span>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-900">{user?.email}</p>
-            </div>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-          >
-            🚪 Logout
-          </button>
-        </div>
-      </aside>
-
-      <main className="flex-1 p-8">
+    <div className="min-h-screen">
+      <Header />
+      <main className="p-4 sm:p-6 lg:p-8">
         <div className="max-w-6xl mx-auto">
           <div className="mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Browser Mining Node Manager</h2>
-            <p className="text-gray-600">Spin up isolated HTML5 Web Worker mining nodes</p>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Browser Mining Node Manager</h2>
+            <p className="text-gray-600 dark:text-gray-400">Spin up isolated HTML5 Web Worker mining nodes</p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Provision New Node</h3>
+          <div className="card p-6 mb-6">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Provision New Node</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Node Name</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Node Name</label>
                 <input
                   type="text"
                   value={newNodeName}
                   onChange={(e) => setNewNodeName(e.target.value)}
                   placeholder="My Mining Node"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="input-field w-full px-4 py-2"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Allocated Threads: {newAllocatedThreads}
                 </label>
                 <input
@@ -383,7 +285,7 @@ export default function BrowserMiningPage() {
                 <button
                   onClick={handleProvisionNode}
                   disabled={!newNodeName.trim()}
-                  className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium disabled:opacity-50"
+                  className="btn-primary w-full px-4 py-2 font-medium disabled:opacity-50"
                 >
                   Provision Node
                 </button>
@@ -397,39 +299,39 @@ export default function BrowserMiningPage() {
               return (
                 <div
                   key={miner.$id}
-                  className={`bg-white rounded-xl shadow-md p-6 border-2 transition-all ${
+                  className={`card p-6 border-2 transition-all ${
                     miner.isRunning ? 'border-green-500' : 'border-transparent'
                   }`}
                 >
                   <div className="mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900">{miner.nodeName}</h3>
-                    <p className="text-sm text-gray-500">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{miner.nodeName}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       Created {new Date(miner.createdAt).toLocaleDateString()}
                     </p>
                   </div>
 
                   <div className="space-y-3 mb-6">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-500">Allocated Threads</span>
-                      <span className="text-gray-900 font-medium">{miner.allocatedThreads}</span>
+                      <span className="text-gray-500 dark:text-gray-400">Allocated Threads</span>
+                      <span className="text-gray-900 dark:text-gray-100 font-medium">{miner.allocatedThreads}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-500">Total Hashes</span>
-                      <span className="text-gray-900 font-medium">
+                      <span className="text-gray-500 dark:text-gray-400">Total Hashes</span>
+                      <span className="text-gray-900 dark:text-gray-100 font-medium">
                         {(miner.totalHashesMined + (workerState?.sessionHashes || 0)).toLocaleString()}
                       </span>
                     </div>
                     {miner.isRunning && workerState && (
                       <>
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-500">Hashrate</span>
-                          <span className="text-green-600 font-medium">
+                          <span className="text-gray-500 dark:text-gray-400">Hashrate</span>
+                          <span className="text-green-600 dark:text-green-400 font-medium">
                             {workerState.hashesPerSecond.toLocaleString()} H/s
                           </span>
                         </div>
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-500">Batch Count</span>
-                          <span className="text-indigo-600 font-medium">{workerState.batchCount}</span>
+                          <span className="text-gray-500 dark:text-gray-400">Batch Count</span>
+                          <span className="text-orange-600 dark:text-orange-400 font-medium">{workerState.batchCount}</span>
                         </div>
                       </>
                     )}
@@ -440,15 +342,15 @@ export default function BrowserMiningPage() {
                       onClick={() => handleToggleMiner(miner)}
                       className={`flex-1 py-2 rounded-lg font-medium transition-colors ${
                         miner.isRunning
-                          ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                          : 'bg-green-100 text-green-700 hover:bg-green-200'
+                          ? 'bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50'
+                          : 'bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50'
                       }`}
                     >
                       {miner.isRunning ? 'Stop' : 'Start'}
                     </button>
                     <button
                       onClick={() => handleEditMiner(miner)}
-                      className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                      className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                     >
                       ✏️
                     </button>
@@ -456,7 +358,7 @@ export default function BrowserMiningPage() {
 
                   <button
                     onClick={() => handleDecommissionNode(miner)}
-                    className="w-full py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors font-medium"
+                    className="w-full py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors font-medium"
                   >
                     Decommission Node
                   </button>
@@ -466,8 +368,8 @@ export default function BrowserMiningPage() {
           </div>
 
           {miners.length === 0 && (
-            <div className="bg-white rounded-xl shadow-md p-12 text-center">
-              <p className="text-gray-500 text-lg">No mining nodes provisioned yet</p>
+            <div className="card p-12 text-center">
+              <p className="text-gray-500 dark:text-gray-400 text-lg">No mining nodes provisioned yet</p>
             </div>
           )}
         </div>
@@ -475,20 +377,20 @@ export default function BrowserMiningPage() {
 
       {showEditModal && editingMiner && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Edit Mining Node</h3>
+          <div className="card p-6 w-full max-w-md">
+            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Edit Mining Node</h3>
             <div className="space-y-4 mb-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Node Name</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Node Name</label>
                 <input
                   type="text"
                   value={editNodeName}
                   onChange={(e) => setEditNodeName(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  className="input-field w-full px-4 py-2"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Allocated Threads: {editAllocatedThreads}
                 </label>
                 <input
@@ -504,14 +406,14 @@ export default function BrowserMiningPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowEditModal(false)}
-                className="flex-1 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                className="flex-1 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveEdit}
                 disabled={!editNodeName.trim()}
-                className="flex-1 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium disabled:opacity-50"
+                className="flex-1 py-2 btn-primary font-medium disabled:opacity-50"
               >
                 Save Changes
               </button>

@@ -4,14 +4,14 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { databases, Query } from '@/lib/appwrite';
 import { useRouter } from 'next/navigation';
+import Header from '@/components/Header';
 
 export default function SettingsPage() {
-  const { user, logout, loading } = useAuth();
+  const { user, loading } = useAuth();
   const router = useRouter();
   const [userData, setUserData] = useState<any>(null);
   const [loadingData, setLoadingData] = useState(true);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [activeNav, setActiveNav] = useState('settings');
 
   useEffect(() => {
     if (!loading && !user) {
@@ -39,11 +39,6 @@ export default function SettingsPage() {
     }
   };
 
-  const handleLogout = async () => {
-    await logout();
-    router.push('/login');
-  };
-
   if (loading || loadingData) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -53,106 +48,40 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      <aside className="w-64 bg-white shadow-lg">
-        <div className="p-6 border-b border-gray-200">
-          <h1 className="text-2xl font-bold text-indigo-600">Affiliate Event</h1>
-        </div>
-        <nav className="p-4 space-y-2">
-          <button
-            onClick={() => router.push('/dashboard')}
-            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-              activeNav === 'dashboard'
-                ? 'bg-indigo-50 text-indigo-700 font-medium'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            📊 Dashboard
-          </button>
-          <button
-            onClick={() => router.push('/mining')}
-            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-              activeNav === 'mining'
-                ? 'bg-indigo-50 text-indigo-700 font-medium'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            ⛏️ Passive Mining
-          </button>
-          <button
-            onClick={() => router.push('/wallet')}
-            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-              activeNav === 'wallet'
-                ? 'bg-indigo-50 text-indigo-700 font-medium'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            💳 Wallet
-          </button>
-          <button
-            onClick={() => setActiveNav('settings')}
-            className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
-              activeNav === 'settings'
-                ? 'bg-indigo-50 text-indigo-700 font-medium'
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-          >
-            ⚙️ Settings
-          </button>
-        </nav>
-        <div className="absolute bottom-0 w-64 p-4 border-t border-gray-200">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-              <span className="text-indigo-600 font-bold">
-                {user?.email?.[0].toUpperCase()}
-              </span>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-900">{user?.email}</p>
-              <p className="text-xs text-gray-500">Tier {userData?.tierLevel || 0}</p>
-            </div>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-          >
-            🚪 Logout
-          </button>
-        </div>
-      </aside>
-
-      <main className="flex-1 p-8">
+    <div className="min-h-screen">
+      <Header />
+      <main className="p-4 sm:p-6 lg:p-8">
         <div className="max-w-3xl mx-auto">
           <div className="mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Settings</h2>
-            <p className="text-gray-600">Manage your account preferences</p>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Settings</h2>
+            <p className="text-gray-600 dark:text-gray-400">Manage your account preferences</p>
           </div>
 
           <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Profile</h3>
+            <div className="card p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Profile</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
                   <input
                     type="email"
                     value={user?.email}
                     disabled
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50"
+                    className="input-field w-full px-4 py-3 bg-gray-50 dark:bg-gray-700"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Referral Code</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Referral Code</label>
                   <div className="flex items-center gap-2">
                     <input
                       type="text"
                       value={userData?.referralCode || ''}
                       readOnly
-                      className="flex-1 px-4 py-3 border border-gray-300 rounded-lg bg-gray-50"
+                      className="flex-1 input-field px-4 py-3 bg-gray-50 dark:bg-gray-700"
                     />
                     <button
                       onClick={() => navigator.clipboard.writeText(userData?.referralCode || '')}
-                      className="px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                      className="btn-primary px-4 py-3"
                     >
                       📋 Copy
                     </button>
@@ -161,17 +90,17 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Notifications</h3>
+            <div className="card p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Notifications</h3>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium text-gray-900">Email Notifications</p>
-                  <p className="text-sm text-gray-500">Receive updates about your earnings and tasks</p>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">Email Notifications</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Receive updates about your earnings and tasks</p>
                 </div>
                 <button
                   onClick={() => setNotificationsEnabled(!notificationsEnabled)}
                   className={`w-16 h-8 rounded-full transition-colors relative ${
-                    notificationsEnabled ? 'bg-green-600' : 'bg-gray-300'
+                    notificationsEnabled ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
                   }`}
                 >
                   <div className={`w-6 h-6 bg-white rounded-full shadow-md absolute top-1 left-1 transition-transform ${
@@ -181,15 +110,15 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Earning Platforms</h3>
-              <p className="text-gray-500 text-sm mb-4">Access all your earning platforms in one place</p>
+            <div className="card p-6">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Earning Platforms</h3>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-4">Access all your earning platforms in one place</p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="border border-gray-200 rounded-lg p-4">
-                  <h4 className="font-medium text-gray-900 mb-2">Offer Wall</h4>
-                  <p className="text-sm text-gray-500 mb-3">Complete surveys and offers</p>
-                  <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Offer Wall</h4>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Complete surveys and offers</p>
+                  <div className="aspect-video bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
                     <iframe
                       src="https://example.com/offer-wall"
                       title="Offer Wall"
@@ -198,10 +127,10 @@ export default function SettingsPage() {
                     />
                   </div>
                 </div>
-                <div className="border border-gray-200 rounded-lg p-4">
-                  <h4 className="font-medium text-gray-900 mb-2">Game Rewards</h4>
-                  <p className="text-sm text-gray-500 mb-3">Play games and earn</p>
-                  <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Game Rewards</h4>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Play games and earn</p>
+                  <div className="aspect-video bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
                     <iframe
                       src="https://example.com/game-rewards"
                       title="Game Rewards"
@@ -213,14 +142,14 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-md p-6 border border-red-200">
-              <h3 className="text-lg font-semibold text-red-700 mb-4">Danger Zone</h3>
+            <div className="card p-6 border border-red-200 dark:border-red-800">
+              <h3 className="text-lg font-semibold text-red-700 dark:text-red-400 mb-4">Danger Zone</h3>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium text-gray-900">Delete Account</p>
-                  <p className="text-sm text-gray-500">Permanently delete your account and all data</p>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">Delete Account</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Permanently delete your account and all data</p>
                 </div>
-                <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                <button className="px-4 py-2 bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 text-white rounded-lg transition-colors">
                   Delete Account
                 </button>
               </div>
